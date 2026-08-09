@@ -718,7 +718,9 @@ from ipywidgets import interact, interactive, fixed, interact_manual
 import ipywidgets as widgets
 from IPython import display
 import scipy.stats as st
-from sci_analysis import analyze
+# sci_analysis.analyze was imported but never called anywhere in this file,
+# and the package itself doesn't import under NumPy 2.x (uses the removed
+# np.float_ alias) -- removed rather than fought, since it was dead code.
 #from easing_functions import *
 import numpy as np
 from pydub import AudioSegment
