@@ -451,8 +451,28 @@ def pipie(modulestr):
     print(res)
 
 def wget(url, outputdir):
-    res = subprocess.run(['wget', url, '-P', f'{outputdir}'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-    print(res)
+    # The original shelled out to a system `wget` binary, which Colab/Linux
+    # always has and Windows never does -- every model download in this
+    # notebook went through this function, so a missing `wget` on Windows
+    # surfaced later as a confusing "file not found" for whatever checkpoint
+    # was supposedly being downloaded. urlretrieve is stdlib, follows
+    # redirects the same way curl -L does, and works on every platform.
+    import urllib.request
+    from urllib.parse import urlparse
+
+    filename = os.path.basename(urlparse(url).path)
+    dest = os.path.join(outputdir, filename)
+    createPath(outputdir)
+
+    def _progress(block_num, block_size, total_size):
+        if total_size <= 0 or block_num % 200:
+            return
+        downloaded = min(block_num * block_size, total_size)
+        print(f'{filename}: {downloaded * 100 // total_size}% '
+              f'({downloaded // (1024 * 1024)}MB / {total_size // (1024 * 1024)}MB)')
+
+    print(f'Downloading {url} -> {dest}')
+    urllib.request.urlretrieve(url, dest, reporthook=_progress)
 
 try:
     from google.colab import drive
