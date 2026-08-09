@@ -3701,8 +3701,14 @@ def get_inbetweens(key_frames, integer=False):
     """
     key_frame_series = pd.Series([np.nan for a in range(max_frames)])
 
+    # parse_key_frames returns raw strings (it's also used for non-numeric
+    # values like prompts), and older pandas silently coerced a numeric
+    # string into this float64 Series on assignment. Pandas 3.x correctly
+    # rejects that -- convert explicitly here, before assignment, rather
+    # than relying on the .astype(float) below (which was always one line
+    # too late to help the assignment itself).
     for i, value in key_frames.items():
-        key_frame_series[i] = value
+        key_frame_series[i] = float(value)
     key_frame_series = key_frame_series.astype(float)
     
     interp_method = interp_spline
