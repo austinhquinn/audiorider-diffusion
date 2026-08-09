@@ -2854,7 +2854,7 @@ model_default = model_config['image_size']
 
 if use_secondary_model:
     secondary_model = SecondaryDiffusionImageNet2()
-    secondary_model.load_state_dict(torch.load(f'{model_path}/secondary_model_imagenet_2.pth', map_location='cpu'))
+    secondary_model.load_state_dict(torch.load(f'{model_path}/secondary_model_imagenet_2.pth', map_location='cpu', weights_only=False))
     secondary_model.eval().requires_grad_(False).to(device)
 
 clip_models = []
@@ -3999,7 +3999,7 @@ if animation_mode == "Video Input":
             if len(frames)>=2:
         
                 raft_model = torch.nn.DataParallel(RAFT(args2))
-                raft_model.load_state_dict(torch.load(f'{root_path}/RAFT/models/raft-things.pth'))
+                raft_model.load_state_dict(torch.load(f'{root_path}/RAFT/models/raft-things.pth', weights_only=False))
                 raft_model = raft_model.module.cuda().eval()
         
                 for f in pathlib.Path(f'{flo_fwd_folder}').glob('*.*'):
@@ -4515,9 +4515,9 @@ args = SimpleNamespace(**args)
 print('Prepping model...')
 model, diffusion = create_model_and_diffusion(**model_config)
 if diffusion_model == 'custom':
-    model.load_state_dict(torch.load(custom_path, map_location='cpu'))
+    model.load_state_dict(torch.load(custom_path, map_location='cpu', weights_only=False))
 else:
-    model.load_state_dict(torch.load(f'{model_path}/{get_model_filename(diffusion_model)}', map_location='cpu'))
+    model.load_state_dict(torch.load(f'{model_path}/{get_model_filename(diffusion_model)}', map_location='cpu', weights_only=False))
 model.requires_grad_(False).eval().to(device)
 for name, param in model.named_parameters():
     if 'qkv' in name or 'norm' in name or 'proj' in name:
