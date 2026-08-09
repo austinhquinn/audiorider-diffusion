@@ -3518,7 +3518,7 @@ if animation_mode == "Video Input":
             f.unlink()
     except:
         print('')
-    vf = f'select=not(mod(n\,{extract_nth_frame}))'
+    vf = rf'select=not(mod(n\,{extract_nth_frame}))'
     if os.path.exists(video_init_path):
         subprocess.run(['ffmpeg', '-i', f'{video_init_path}', '-vf', f'{vf}', '-vsync', 'vfr', '-q:v', '2', '-loglevel', 'error', '-stats', f'{videoFramesFolder}/%04d.jpg'], stdout=subprocess.PIPE).stdout.decode('utf-8')
     else: 
@@ -3729,10 +3729,13 @@ def get_inbetweens(key_frames, integer=False):
     return key_frame_series
 
 def split_prompts(prompts):
-    prompt_series = pd.Series([np.nan for a in range(max_frames)])
+    # dtype=object: this holds prompt strings/lists, not numbers. An
+    # all-NaN Series without an explicit dtype infers float64, and pandas
+    # 3.x (unlike older versions) refuses to assign a string/list into a
+    # float64 Series in place -- it needs to be object-typed from creation.
+    prompt_series = pd.Series([np.nan for a in range(max_frames)], dtype=object)
     for i, prompt in prompts.items():
         prompt_series[i] = prompt
-    # prompt_series = prompt_series.astype(str)
     prompt_series = prompt_series.ffill().bfill()
     return prompt_series
 
