@@ -2714,8 +2714,12 @@ RN50_quickgelu_cc12m = False #@param{type:"boolean"}
 RN101_yfcc15m = False #@param{type:"boolean"}
 RN101_quickgelu_yfcc15m = False #@param{type:"boolean"}
 
-#@markdown If you're having issues with model downloads, check this to compare SHA's:
-check_model_SHA = False #@param{type:"boolean"}
+#@markdown Model checkpoints are always verified against the pinned SHA256 in
+#@markdown diff_model_map before load -- torch.load(weights_only=False) below
+#@markdown executes arbitrary code on unpickling, so an unverified checkpoint
+#@markdown (corrupted, or served by a compromised/MITM'd mirror) is a real
+#@markdown code-execution risk, not just a correctness one. This check is not
+#@markdown optional.
 
 diff_model_map = {
     '256x256_diffusion_uncond': { 'downloaded': False, 'sha': 'a37c32fffd316cd494cf3f35b339936debdc1576dad13fe57c42399a5dbc78b1', 'uri_list': ['https://openaipublic.blob.core.windows.net/diffusion/jul-2021/256x256_diffusion_uncond.pt', 'https://www.dropbox.com/s/9tqnqo930mpnpcn/256x256_diffusion_uncond.pt'] },
@@ -2744,33 +2748,42 @@ def get_model_filename(diffusion_model_name):
     return model_filename
 
 
+def _sha256_matches(path, expected_sha):
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest() == expected_sha
+
+
 def download_model(diffusion_model_name, uri_index=0):
     if diffusion_model_name != 'custom':
         model_filename = get_model_filename(diffusion_model_name)
         model_local_path = os.path.join(model_path, model_filename)
-        if os.path.exists(model_local_path) and check_model_SHA:
-            print(f'Checking {diffusion_model_name} File')
-            with open(model_local_path, "rb") as f:
-                bytes = f.read() 
-                hash = hashlib.sha256(bytes).hexdigest()
-            if hash == diff_model_map[diffusion_model_name]['sha']:
+        expected_sha = diff_model_map[diffusion_model_name]['sha']
+
+        if os.path.exists(model_local_path):
+            print(f'Checking {diffusion_model_name} file against its pinned SHA256')
+            if _sha256_matches(model_local_path, expected_sha):
                 print(f'{diffusion_model_name} SHA matches')
                 diff_model_map[diffusion_model_name]['downloaded'] = True
             else:
-                print(f"{diffusion_model_name} SHA doesn't match. Will redownload it.")
-        elif os.path.exists(model_local_path) and not check_model_SHA or diff_model_map[diffusion_model_name]['downloaded']:
-            print(f'{diffusion_model_name} already downloaded. If the file is corrupt, enable check_model_SHA.')
-            diff_model_map[diffusion_model_name]['downloaded'] = True
+                print(f"{diffusion_model_name} SHA doesn't match -- deleting and redownloading.")
+                os.remove(model_local_path)
 
         if not diff_model_map[diffusion_model_name]['downloaded']:
             for model_uri in diff_model_map[diffusion_model_name]['uri_list']:
                 wget(model_uri, model_path)
-                if os.path.exists(model_local_path):
+                if not os.path.exists(model_local_path):
+                    print(f'{diffusion_model_name} model download from {model_uri} failed. Will try any fallback uri.')
+                    continue
+                if _sha256_matches(model_local_path, expected_sha):
                     diff_model_map[diffusion_model_name]['downloaded'] = True
                     return
-                else:
-                    print(f'{diffusion_model_name} model download from {model_uri} failed. Will try any fallback uri.')
-            print(f'{diffusion_model_name} download failed.')
+                print(f'{diffusion_model_name} downloaded from {model_uri} does not match the pinned '
+                      f'SHA256 -- deleting and trying the next mirror.')
+                os.remove(model_local_path)
+            raise RuntimeError(
+                f'{diffusion_model_name} download failed: no mirror in uri_list produced a file '
+                f'matching the pinned SHA256. Refusing to load an unverified checkpoint.'
+            )
 
 
 # Download the diffusion model(s)
