@@ -8,8 +8,10 @@ import sys, math
 try:
     from infer import InferenceHelper
 except:
-    print("disco_xform_utils.py failed to import InferenceHelper. Please ensure that AdaBins directory is in the path (i.e. via sys.path.append('./AdaBins') or other means).")
-    sys.exit()
+    print("disco_xform_utils.py: AdaBins unavailable (InferenceHelper not importable). "
+          "3D mode still works via MiDaS alone -- only midas_weight < 1.0 (blending in "
+          "AdaBins) is unavailable now.")
+    InferenceHelper = None
 
 MAX_ADABINS_AREA = 500000
 MIN_ADABINS_AREA = 448*448
@@ -20,7 +22,7 @@ def transform_image_3d(img_filepath, midas_model, midas_transform, device, rot_m
     w, h = img_pil.size
     image_tensor = torchvision.transforms.functional.to_tensor(img_pil).to(device)
 
-    use_adabins = midas_weight < 1.0
+    use_adabins = (midas_weight < 1.0) and (InferenceHelper is not None)
 
     if use_adabins:
         # AdaBins
