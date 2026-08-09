@@ -2970,8 +2970,9 @@ if diffusion_model == 'custom':
 
 #@title generate spectrogram for init image
 from os.path import exists as file_exists
-out = '/content/input/init.png'
-audio_filename = '/content/input/input.mp3'
+out = f'{root_path}/input/init.png'
+audio_filename = r'C:\audiorider\audio_samples\Gui - Ocean Eyes Liquid Edit.wav'
+createPath(os.path.dirname(out))
 if file_exists(out):
   print("init image exists already ", out)
 else:
@@ -3006,7 +3007,7 @@ import math
 from decimal import Decimal
 
 
-img2 = cv2.imread('/content/input/init.png')
+img2 = cv2.imread(out)
   
 # fetching the dimensions
 nXPixels = img2.shape[1]
@@ -3058,7 +3059,7 @@ video_init_skip_steps = 50 #@param{type: 'integer'}
 #@markdown ---
 
 #@markdown ####**Init Image Settings:**
-init_image = "/content/input/init.png" #@param{type: 'string'}
+init_image = out #@param{type: 'string'}
 init_scale =  1000#@param{type: 'integer'}
 skip_steps_percent=0.65 #@param {type:"slider", min:0, max:0.9, step:0.05}
 skip_steps = int(steps*skip_steps_percent) #@ param{type: 'integer'}
