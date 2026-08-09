@@ -2375,12 +2375,16 @@ def bloomingOverlay3(audio_fx_blooming_data , image_bloom, j):
     return blurred
 
 def fig2rgb_array(fig):
-    """adapted from: https://stackoverflow.com/questions/21939658/"""
+    """adapted from: https://stackoverflow.com/questions/21939658/
+
+    tostring_rgb() was removed in newer matplotlib; buffer_rgba() is the
+    replacement, so this drops the alpha channel to keep the same (nrows,
+    ncols, 3) uint8 output the caller expects.
+    """
     fig.canvas.draw()
-    buf = fig.canvas.tostring_rgb()
     ncols, nrows = fig.canvas.get_width_height()
-    #print("to verify, our resolution is: ",ncols,nrows)
-    return np.frombuffer(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
+    buf = np.asarray(fig.canvas.buffer_rgba(), dtype=np.uint8).reshape(nrows, ncols, 4)
+    return buf[:, :, :3]
 def midpoints(x):
     sl = ()
     for i in range(x.ndim):
