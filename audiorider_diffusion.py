@@ -2956,7 +2956,7 @@ if diffusion_model == 'custom':
 #@title generate spectrogram for init image
 from os.path import exists as file_exists
 out = f'{root_path}/input/init.png'
-audio_filename = r'C:\audiorider\audio_samples\Gui - Ocean Eyes Liquid Edit.wav'
+audio_filename = r'C:\audiorider\audio_samples\Gui - Ocean Eyes Liquid Edit.wav' #@param {type: 'string'}
 createPath(os.path.dirname(out))
 if file_exists(out):
   print("init image exists already ", out)
