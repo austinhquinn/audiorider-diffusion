@@ -2112,14 +2112,14 @@ def make_random_prompt(amount):
 
 
     # files to import
-    prompt_dict["adjectives"] = open("/content/prompt_gen/adjectives.txt").read().splitlines()
-    prompt_dict["animals"] = open("/content/prompt_gen/animals.txt").read().splitlines()
-    prompt_dict["artists"] = open("/content/prompt_gen/artists.txt").read().splitlines()
-    prompt_dict["colors"] = open("/content/prompt_gen/colors.txt").read().splitlines()
-    prompt_dict["things"] = open("/content/prompt_gen/things.txt").read().splitlines()
-    prompt_dict["shapes"] = open("/content/prompt_gen/shapes.txt").read().splitlines()
-    prompt_dict["suffixes"] = open("/content/prompt_gen/styles.txt").read().splitlines()
-    prompt_dict["locations"] = open("/content/prompt_gen/locations.txt").read().splitlines()
+    prompt_dict["adjectives"] = open(f"{root_path}/prompt_gen/adjectives.txt").read().splitlines()
+    prompt_dict["animals"] = open(f"{root_path}/prompt_gen/animals.txt").read().splitlines()
+    prompt_dict["artists"] = open(f"{root_path}/prompt_gen/artists.txt").read().splitlines()
+    prompt_dict["colors"] = open(f"{root_path}/prompt_gen/colors.txt").read().splitlines()
+    prompt_dict["things"] = open(f"{root_path}/prompt_gen/things.txt").read().splitlines()
+    prompt_dict["shapes"] = open(f"{root_path}/prompt_gen/shapes.txt").read().splitlines()
+    prompt_dict["suffixes"] = open(f"{root_path}/prompt_gen/styles.txt").read().splitlines()
+    prompt_dict["locations"] = open(f"{root_path}/prompt_gen/locations.txt").read().splitlines()
     
 
     adj_string = "" # for having multiple adjectives
@@ -3453,7 +3453,8 @@ if audio_fx_TPKR_enabled == True:
       audio_fx_TPKR_counter = 1
   beatTime=beatTimeIter
   if audio_fx_TPKR_generator_enabled == True:
-    %shell git clone https://github.com/sanzelda/prompt_gen.git /content/prompt_gen || echo "clone failed"
+    # %shell is a Colab-only magic; ! runs the same command portably.
+    !git clone https://github.com/sanzelda/prompt_gen.git {root_path}/prompt_gen || echo "clone failed"
     import random
     amount_of_prompts = len(beatTime)
     make_random_prompt(amount_of_prompts)
