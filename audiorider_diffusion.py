@@ -3366,7 +3366,7 @@ if audio_fx_polarwaveform_enabled == True:
   audio_fx_polarwaveform=str()
   plotGraph(audio_fx_polarwaveform_data,'audio_fx_polarwaveform_data')
 #@markdown ___Frequency Splat___: Overlay semirandom circles based on audio data
-audio_fx_splat_enabled = True #@param {type: "boolean" }
+audio_fx_splat_enabled = False #@param {type: "boolean" }
 audio_fx_splat_preped=audio_fx_splat_data = np.array([], dtype=np.float64)
 audio_fx_splat_frequency = "Full" #@param ["Full", "Sub Bass","Bass", "Lower Midrange", "Midrange","Upper Midrange", "Presence", "Brilliance","3StepLFO","Sine","Saw","Square"]
 audio_fx_splat_multiplier = 1 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] {type:"raw"}
