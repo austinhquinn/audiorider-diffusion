@@ -1833,7 +1833,7 @@ def normAndScale(data,multiplier):
     return (2*data_scaled-1)*multiplier
 
 def audioBandpassDataFetch(audio_data,smooth,kernel_size,multiplier):
-    if smooth == True and kernel_size is not '':
+    if smooth == True and kernel_size != '':
       audio_data = smoothing(audio_data,kernel_size)
     audio_data = normAndScale(audio_data,multiplier)
 
@@ -2021,13 +2021,13 @@ def spectrogram_image(y, sr, out, hop_length, n_mels,time_steps):
 def plotBeatGraph(detType,data,title,fps):
   beatTime=np.array([], dtype=np.float64)
 
-  if detType is 'BeatDetection' or  'PredominantLocalPulse':
+  if detType == 'BeatDetection' or detType == 'PredominantLocalPulse':
     onset_env = librosa.onset.onset_strength(y=data["y"], sr=data["sr"])
     pulse = librosa.beat.plp(onset_envelope=onset_env, sr=data["sr"])
     tempo, beats = librosa.beat.beat_track(onset_envelope=onset_env)
     beats_plp = np.flatnonzero(librosa.util.localmax(pulse))
     fig, ax = plt.subplots(1)
-    if detType is 'BeatDetection':
+    if detType == 'BeatDetection':
       times = librosa.times_like(onset_env, sr=data["sr"])
       ax.plot(times, librosa.util.normalize(onset_env),
          label='Onset strength')
@@ -2047,7 +2047,7 @@ def plotBeatGraph(detType,data,title,fps):
       ax.set(title='librosa.beat.plp')
       ax.xaxis.set_major_formatter(librosa.display.TimeFormatter())
       beatTime=times[beats_plp]
-  elif detType is 'Superflux': 
+  elif detType == 'Superflux': 
     D = librosa.stft(data[y])
     D_harmonic, D_percussive = librosa.decompose.hpss(D)
     # Pre-compute a global reference power from the input spectrum
@@ -2083,7 +2083,7 @@ def plotBeatGraph(detType,data,title,fps):
     ax.legend()
     ax.label_outer()
     beatTime=onset_sf
-  elif detType is 'Backtracked':
+  elif detType == 'Backtracked':
     S = np.abs(librosa.stft(y=data["y"]))
     oenv = librosa.onset.onset_strength(y=data["y"], sr=data["sr"])
     times = librosa.times_like(oenv)
@@ -3206,7 +3206,7 @@ audio_angle_multiplier = 3 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 
 audio_angle_soften = True #@param {type: "boolean" }
 audio_angle_kernel_size=20 #@param{type: 'integer'}
 audio_angle_data =  locals()[rangeLookup(audio_angle_frequency)]
-if audio_angle_soften == True and audio_angle_kernel_size is not '':
+if audio_angle_soften == True and audio_angle_kernel_size != '':
   audio_angle_data = smoothing(audio_angle_data,audio_angle_kernel_size)
 audio_angle_data = normAndScale(audio_angle_data,audio_angle_multiplier)
 audio_angle=str()
@@ -3218,7 +3218,7 @@ audio_zoom_multiplier = 0.5 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9,
 audio_zoom_soften = True #@param {type: "boolean" }
 audio_zoom_kernel_size=20 #@param{type: 'integer'}
 audio_zoom_data =  locals()[rangeLookup(audio_zoom_frequency)]
-if audio_zoom_soften == True and audio_zoom_kernel_size is not '':
+if audio_zoom_soften == True and audio_zoom_kernel_size != '':
   audio_zoom_data = smoothing(audio_zoom_data,audio_zoom_kernel_size)
 audio_zoom_data = normAndScale(audio_zoom_data,audio_zoom_multiplier)
 audio_zoom=str()
@@ -3233,7 +3233,7 @@ audio_translation_x_multiplier = 4 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6, 7
 audio_translation_x_soften = True #@param {type: "boolean" }
 audio_translation_x_kernel_size=216 #@param{type: 'integer'}
 audio_translation_x_data =  locals()[rangeLookup(audio_translation_x_frequency)]
-if audio_translation_x_soften == True and audio_translation_x_kernel_size is not '':
+if audio_translation_x_soften == True and audio_translation_x_kernel_size != '':
   audio_translation_x_data = smoothing(audio_translation_x_data,audio_translation_x_kernel_size)
 audio_translation_x_data = normAndScale(audio_translation_x_data,audio_translation_x_multiplier)
 audio_translation_x=str()
@@ -3244,7 +3244,7 @@ audio_translation_y_multiplier = 4 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6, 7
 audio_translation_y_soften = True #@param {type: "boolean" }
 audio_translation_y_kernel_size=216 #@param{type: 'integer'}
 audio_translation_y_data =  locals()[rangeLookup(audio_translation_y_frequency)]
-if audio_translation_y_soften == True and audio_translation_y_kernel_size is not '':
+if audio_translation_y_soften == True and audio_translation_y_kernel_size != '':
   audio_translation_y_data = smoothing(audio_translation_y_data,audio_translation_y_kernel_size)
 audio_translation_y_data = normAndScale(audio_translation_y_data,audio_translation_y_multiplier)
 audio_translation_y=str()
@@ -3262,12 +3262,12 @@ audio_translation_z_modkernel_size=216 #@param{type: 'integer'}
 if audio_translation_z_modulation == True:
   audio_translation_z_modfreq_data = np.array([], dtype=np.float64)
   audio_translation_z_modfreq_data = locals()[rangeLookup(audio_translation_z_modfreq)]
-  if audio_translation_z_modsoften == True and audio_translation_z_modkernel_size is not '':
+  if audio_translation_z_modsoften == True and audio_translation_z_modkernel_size != '':
     audio_translation_z_modfreq_data = smoothing(audio_translation_z_modfreq_data,audio_translation_z_modkernel_size)
   audio_translation_z_modfreq_data = normAndScale(audio_translation_z_modfreq_data,audio_translation_z_modmultiplier)
 
 audio_translation_z_data =  locals()[rangeLookup(audio_translation_z_frequency)]
-if audio_translation_z_soften == True and audio_translation_z_kernel_size is not '':
+if audio_translation_z_soften == True and audio_translation_z_kernel_size != '':
   audio_translation_z_data = smoothing(audio_translation_z_data,audio_translation_z_kernel_size)
 audio_translation_z_data = normAndScale(audio_translation_z_data,audio_translation_z_multiplier)
 audio_translation_z=str()
@@ -3282,7 +3282,7 @@ audio_rotation_3d_x_multiplier = 0.25 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6
 audio_rotation_3d_x_soften = True #@param {type: "boolean" }
 audio_rotation_3d_x_kernel_size=216 #@param{type: 'integer'}
 audio_rotation_3d_x_data =  locals()[rangeLookup(audio_rotation_3d_x_frequency)]
-if audio_rotation_3d_x_soften == True and audio_rotation_3d_x_kernel_size is not '':
+if audio_rotation_3d_x_soften == True and audio_rotation_3d_x_kernel_size != '':
   audio_rotation_3d_x_data = smoothing(audio_rotation_3d_x_data,audio_rotation_3d_x_kernel_size)
 audio_rotation_3d_x_data = normAndScale(audio_rotation_3d_x_data,audio_rotation_3d_x_multiplier)
 audio_rotation_3d_x=str()
@@ -3293,7 +3293,7 @@ audio_rotation_3d_y_multiplier = 0.5 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6,
 audio_rotation_3d_y_soften = True #@param {type: "boolean" }
 audio_rotation_3d_y_kernel_size=216 #@param{type: 'integer'}
 audio_rotation_3d_y_data =  locals()[rangeLookup(audio_rotation_3d_y_frequency)]
-if audio_rotation_3d_y_soften == True and audio_rotation_3d_y_kernel_size is not '':
+if audio_rotation_3d_y_soften == True and audio_rotation_3d_y_kernel_size != '':
   audio_rotation_3d_y_data = smoothing(audio_rotation_3d_y_data,audio_rotation_3d_y_kernel_size)
 audio_rotation_3d_y_data = normAndScale(audio_rotation_3d_y_data,audio_rotation_3d_y_multiplier)
 audio_rotation_3d_y=str()
@@ -3304,7 +3304,7 @@ audio_rotation_3d_z_multiplier = 0.5 #@param [0.05, 0.25 ,0.5, 1, 2, 3, 4, 5, 6,
 audio_rotation_3d_z_soften = True #@param {type: "boolean" }
 audio_rotation_3d_z_kernel_size=216 #@param{type: 'integer'}
 audio_rotation_3d_z_data =  locals()[rangeLookup(audio_rotation_3d_z_frequency)]
-if audio_rotation_3d_z_soften == True and audio_rotation_3d_z_kernel_size is not '':
+if audio_rotation_3d_z_soften == True and audio_rotation_3d_z_kernel_size != '':
   audio_rotation_3d_z_data = smoothing(audio_rotation_3d_z_data,audio_rotation_3d_z_kernel_size)
 audio_rotation_3d_z_data = normAndScale(audio_rotation_3d_z_data,audio_rotation_3d_z_multiplier)
 audio_rotation_3d_z=str()
@@ -3329,7 +3329,7 @@ audio_cut_overview_soften = True #@param {type: "boolean" }
 audio_cut_overview_kernel_size=20 #@param{type: 'integer'}
 audio_cut_overview_buckets=216 #@param{type: 'integer'}
 audio_cut_overview_data =  locals()[rangeLookup(audio_cut_overview_frequency)]
-if audio_cut_overview_soften == True and audio_cut_overview_kernel_size is not '':
+if audio_cut_overview_soften == True and audio_cut_overview_kernel_size != '':
   audio_cut_overview_data = smoothing(audio_cut_overview_data,audio_cut_overview_kernel_size)
 audio_cut_overview_data = normAndScalePositive(audio_cut_overview_data,1)
 audio_cut_innercut=audio_cut_overview=str() 
@@ -3352,7 +3352,7 @@ audio_fx_blooming_kernel_size=216 #@param{type: 'integer'}
 
 if audio_fx_blooming_enabled == True:
   audio_fx_blooming_data =  locals()[rangeLookup(audio_fx_blooming_frequency)]
-  if audio_fx_blooming_soften == True and audio_fx_blooming_kernel_size is not '':
+  if audio_fx_blooming_soften == True and audio_fx_blooming_kernel_size != '':
     audio_fx_blooming_data = smoothing(audio_fx_blooming_data,audio_fx_blooming_kernel_size)
   audio_fx_blooming_data = normAndScale(audio_fx_blooming_data,audio_fx_blooming_multiplier)
   audio_fx_blooming=str()
@@ -3368,7 +3368,7 @@ audio_fx_polarwaveform_kernel_size=216 #@param{type: 'integer'}
 audio_fx_polarwaveform_zooming = True #@param {type: "boolean" }
 if audio_fx_polarwaveform_enabled == True:
   audio_fx_polarwaveform_data =  locals()[rangeLookup(audio_fx_polarwaveform_frequency)]
-  if audio_fx_polarwaveform_soften == True and audio_fx_polarwaveform_kernel_size is not '':
+  if audio_fx_polarwaveform_soften == True and audio_fx_polarwaveform_kernel_size != '':
     audio_fx_polarwaveform_data = smoothing(audio_fx_polarwaveform_data,audio_fx_polarwaveform_kernel_size)
   audio_fx_polarwaveform_data = normAndScale(audio_fx_polarwaveform_data,audio_fx_polarwaveform_multiplier)
   audio_fx_polarwaveform=str()
@@ -3382,7 +3382,7 @@ audio_fx_splat_soften = False #@param {type: "boolean" }
 audio_fx_splat_kernel_size=216 #@param{type: 'integer'}
 if audio_fx_splat_enabled == True:
   audio_fx_splat_data =  locals()[rangeLookup(audio_fx_splat_frequency)]
-  if audio_fx_splat_soften == True and audio_fx_splat_kernel_size is not '':
+  if audio_fx_splat_soften == True and audio_fx_splat_kernel_size != '':
     audio_fx_splat_data = smoothing(audio_fx_splat_data,audio_fx_splat_kernel_size)
   audio_fx_splat_data = normAndScale(audio_fx_splat_data,audio_fx_splat_multiplier)
   audio_fx_splat=str()
@@ -3397,7 +3397,7 @@ audio_fx_3dtorus_kernel_size=216 #@param{type: 'integer'}
 audio_fx_3dtorus_zooming = True #@param {type: "boolean" }
 if audio_fx_3dtorus_enabled == True:
   audio_fx_3dtorus_data =  locals()[rangeLookup(audio_fx_3dtorus_frequency)]
-  if audio_fx_3dtorus_soften == True and audio_fx_3dtorus_kernel_size is not '':
+  if audio_fx_3dtorus_soften == True and audio_fx_3dtorus_kernel_size != '':
     audio_fx_3dtorus_data = smoothing(audio_fx_3dtorus_data,audio_fx_3dtorus_kernel_size)
   audio_fx_3dtorus_data = normAndScale(audio_fx_3dtorus_data,audio_fx_3dtorus_multiplier)
   audio_fx_3dtorus=str()
