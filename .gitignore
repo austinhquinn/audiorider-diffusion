@@ -5,6 +5,20 @@ MiDaS/
 models/
 pretrained/*
 settings.json
+progress.png
+input/
+
+# Dependency repos, git-cloned at runtime by the try/except import blocks
+# (CLIP, MiDaS, guided-diffusion, etc.) -- fetched fresh each environment,
+# not source we maintain.
+AdaBins/
+CLIP/
+ResizeRight/
+disco-diffusion/
+guided-diffusion/
+open_clip/
+prompt_gen/
+pytorch3d-lite/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
