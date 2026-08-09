@@ -552,7 +552,11 @@ if not is_colab:
     os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
 
 PROJECT_DIR = os.path.abspath(os.getcwd())
-USE_ADABINS = True
+# AdaBins' checkpoint host (cloudflare-ipfs.com) has been dead since Aug 2024,
+# and InferenceHelper/MAX_ADABINS_AREA (the only names this setup produces)
+# are never referenced anywhere outside this one gated block -- disabling it
+# has no downstream effect. See MIGRATION.md blocker #3.
+USE_ADABINS = False
 
 if is_colab:
     if not google_drive:
