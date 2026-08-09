@@ -2378,13 +2378,15 @@ def fig2rgb_array(fig):
     """adapted from: https://stackoverflow.com/questions/21939658/
 
     tostring_rgb() was removed in newer matplotlib; buffer_rgba() is the
-    replacement, so this drops the alpha channel to keep the same (nrows,
-    ncols, 3) uint8 output the caller expects.
+    replacement. Returns all 4 channels (not 3) -- both callers build a
+    transparent figure (facecolor="None") and need the real alpha Agg
+    computes (correct anti-aliased edges, correct alpha=0.75 scatter-point
+    blending) rather than faking transparency by chroma-keying exact white
+    pixels afterward.
     """
     fig.canvas.draw()
     ncols, nrows = fig.canvas.get_width_height()
-    buf = np.asarray(fig.canvas.buffer_rgba(), dtype=np.uint8).reshape(nrows, ncols, 4)
-    return buf[:, :, :3]
+    return np.asarray(fig.canvas.buffer_rgba(), dtype=np.uint8).reshape(nrows, ncols, 4)
 def midpoints(x):
     sl = ()
     for i in range(x.ndim):
@@ -2430,25 +2432,13 @@ def overlay3dtorus(y_block , imgdata , aj ):
               edgecolors=np.clip(2*colors - 0.5, 0, 1),  # brighter
               linewidth=0.5)
 
+    # fig2rgb_array now returns real RGBA (matplotlib's own alpha for the
+    # transparent facecolor + anti-aliased edges), so Image.fromarray
+    # already produces a correctly-transparent RGBA image directly --
+    # no need to chroma-key exact-white pixels to fake transparency.
     polarOverlayImage = Image.fromarray(fig2rgb_array(ofig))
-    polarOverlayImage = polarOverlayImage.convert('RGBA')
     polarOverlayImage = polarOverlayImage.resize(imgdata.size)
-    #   Transparency
-    newImage = []
-    for item in polarOverlayImage.getdata():
-     if item[:3] == (255, 255, 255):
-       newImage.append((255, 255, 255, 0))
-     else:
-       newImage.append(item)
-       
 
-    #audDataAlpha= (np.floor( aud_vector*255))
-    #aud_vector= (scale_minmax(audio_fx_polarwaveform_data, min=0 , max=128+128))
-    # polarOverlayImage3 = polarOverlayImage.save("/content/polarOverlayImage.png")
-    polarOverlayImage.putdata( newImage )
-    #polarOverlayImage.putalpha(int(audDataAlpha[aj]))
-    
-    # polarOverlayImage4 = polarOverlayImage.save("/content/polarOverlayImage2.png")
     with imgdata.convert("RGBA") as base:
       out1 = Image.alpha_composite(base, polarOverlayImage)
       out = Image.blend(base, out1, alpha=aud_alpha)
@@ -2476,22 +2466,13 @@ def splat(y_block , imgdata , aj,sr):
     
     c = ax.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75)
 
+    # fig2rgb_array now returns real RGBA (matplotlib's own alpha for the
+    # transparent facecolor, correct anti-aliased edges, and the scatter
+    # points' actual alpha=0.75), so Image.fromarray already produces a
+    # correctly-transparent RGBA image directly -- no need to chroma-key
+    # exact-white pixels to fake transparency.
     polarOverlayImage = Image.fromarray(fig2rgb_array(fig))
-    polarOverlayImage = polarOverlayImage.convert('RGBA')
     polarOverlayImage = polarOverlayImage.resize(imgdata.size)
-    #   Transparency
-    newImage = []
-    for item in polarOverlayImage.getdata():
-     if item[:3] == (255, 255, 255):
-       newImage.append((255, 255, 255, 0))
-     else:
-       newImage.append(item)
-    #   print(item[:3])
-    # polarOverlayImage3 = polarOverlayImage.save("/content/polarOverlayImage.png")
-  
-    polarOverlayImage.putdata(newImage)
-    # polarOverlayImage4 = polarOverlayImage.save("/content/polarOverlayImage2.png")
-
 
     with imgdata.convert("RGBA") as base:
       out = Image.alpha_composite(base, polarOverlayImage)
