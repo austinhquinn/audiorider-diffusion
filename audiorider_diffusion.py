@@ -3036,6 +3036,10 @@ print("PROMPT_H =", os.environ['PROMPT_H'])
 # !!   "id": "BasicSettings"
 # !! }}
 #@markdown ####**Basic Settings:**
+# batch_basename was referenced here but never defined anywhere in the
+# original notebook -- a real bug, not a Windows/Colab difference.
+# Deriving a sensible default from the audio file already in scope.
+batch_basename = os.path.splitext(os.path.basename(audio_filename))[0]
 batch_name = f'{batch_basename}' #@param{type: 'string'}
 steps = 500 #@param [25,50,100,150,250,500,1000]{type: 'raw', allow-input: true}
 width_height_for_512x512_models = [int(os.environ['PROMPT_W']), int(os.environ['PROMPT_H'])] #@param{type: 'raw'}
