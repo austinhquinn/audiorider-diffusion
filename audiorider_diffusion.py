@@ -623,8 +623,13 @@ try:
     sys.path.append(PROJECT_DIR)
     import disco_xform_utils as dxf
 except:
+    # Cloning our own fork here, not upstream alembics/disco-diffusion --
+    # a fresh environment (e.g. Colab opened directly from GitHub, which
+    # only fetches this one .ipynb, not the rest of the repo) has no local
+    # disco_xform_utils.py yet, and upstream's copy still has the
+    # sys.exit()-on-missing-AdaBins bug this fork already fixed.
     if not os.path.exists("disco-diffusion"):
-        gitclone("https://github.com/alembics/disco-diffusion.git")
+        gitclone("https://github.com/austinhquinn/audiorider-diffusion.git", "disco-diffusion")
     if not os.path.exists('disco_xform_utils.py'):
         shutil.move('disco-diffusion/disco_xform_utils.py', 'disco_xform_utils.py')
     sys.path.append(PROJECT_DIR)
