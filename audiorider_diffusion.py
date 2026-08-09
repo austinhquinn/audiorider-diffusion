@@ -3097,7 +3097,7 @@ createPath(batchFolder)
 # !!   "id": "KOMeoHDZ2UIh"
 # !! }}
 #@title # ___Audio Settings___
-init_audio='/content/input/input.mp3'#@param{type: 'string'}
+init_audio=audio_filename #@param{type: 'string'}
 #@markdown $\color{red}{\text{Sub Bass}}$ 0-60Hz </br>
 #@markdown $\color{orange}{\text{Bass}}$ 60-250Hz </br>
 #@markdown $\color{yellow}{\text{Lower Midrange}}$ 250-500Hz</br>
