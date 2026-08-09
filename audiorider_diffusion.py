@@ -3025,8 +3025,10 @@ print("resolution you should use: ("+str(width)+" "+str(height)+")")
 print("setting env vars 'PROMPT_W' and 'PROMPT_H' ")
 os.environ['PROMPT_W'] =str(width)
 os.environ['PROMPT_H'] =str(height)
-!export |grep 'PROMPT_W'
-!export |grep 'PROMPT_H'
+# The original used `!export | grep ...` to echo these back -- a bash builtin,
+# not available via Windows cmd.exe. Plain Python works on every platform.
+print("PROMPT_W =", os.environ['PROMPT_W'])
+print("PROMPT_H =", os.environ['PROMPT_H'])
 
 # %%
 # !! {"metadata":{
