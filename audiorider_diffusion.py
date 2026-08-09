@@ -4012,6 +4012,9 @@ if animation_mode == "Video Input":
             if len(frames)>=2:
         
                 raft_model = torch.nn.DataParallel(RAFT(args2))
+                print('Loading RAFT checkpoint with weights_only=False -- downloaded via RAFT\'s own '
+                      'download_models.sh, not diff_model_map, so there is no pinned hash to verify '
+                      'against here.')
                 raft_model.load_state_dict(torch.load(f'{root_path}/RAFT/models/raft-things.pth', weights_only=False))
                 raft_model = raft_model.module.cuda().eval()
         
@@ -4528,6 +4531,8 @@ args = SimpleNamespace(**args)
 print('Prepping model...')
 model, diffusion = create_model_and_diffusion(**model_config)
 if diffusion_model == 'custom':
+    print(f'Loading custom checkpoint from {custom_path} with weights_only=False and no pinned '
+          f'hash to verify against -- only point this at a checkpoint you already trust.')
     model.load_state_dict(torch.load(custom_path, map_location='cpu', weights_only=False))
 else:
     model.load_state_dict(torch.load(f'{model_path}/{get_model_filename(diffusion_model)}', map_location='cpu', weights_only=False))
